@@ -32,18 +32,6 @@ class Command
         @examples    = {}
     end
 end
-class Validations
-    attr_reader :validations
-    def initialize
-        @validations = {}
-    end
-    def validation name, rule
-        @validations[name] = rule
-    end
-    def << validation
-        @validation[validation[:name]] = validation
-    end 
-end
 class Validation
     attr_reader :name, :attributes
     def initialize name, attributes

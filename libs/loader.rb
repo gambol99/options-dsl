@@ -4,6 +4,7 @@
 #
 #  vim:ts=4:sw=4:et
 #
+require 'optsparse'
 require 'model'
 require 'utils'
 require 'loaders/dsl'
@@ -18,9 +19,8 @@ class Loader
 
     @@default_config = {
         :extention  => '*.ddl',
-        :directory  => '.',
-        :filename   => nil,
-        :verbose    => false
+        :directory  => 'examples/',
+        :log_level  => false
     }
 
     # 
@@ -49,9 +49,16 @@ class Loader
     private
     def load_option_parser options = @options
         begin
-            @commands.each_pair do |name,c|
-
-
+            @commands.values.each do |c|
+                @parsers[name] = OptionsParser::new do |o|
+                    o.banner = c.description
+                    o.separator ""
+                    c.inputs.each_pair do |name,input| 
+                        o.on( input.options.short, input.options.long, input.description ) do |x|
+                            validate_input x if defined? x
+                        end
+                    end
+                end
             end
         rescue Exception => e 
             Logger.error "load_option_parser: unable to generate the parsers, error: %s" % [ e.message ]
@@ -112,26 +119,22 @@ class Loader
         options    
     end
 
-
+    #
+    # method: validate_config
+    # description: takes the configutation passed in the initialization and makes sure
+    # we have eveything we need to run - i.e. rules files :-)
+    #
     def validate_config config = @config
         config[:files] = []
-        if !config[:filename] and !config[:directory]
-            raise ArgumentError, "you have not defined either filename or directory"
-        end
-        if config[:filename]
-            validate_options_file config[:filename]
-            config[:files] << @config[:filename]
-        else
-            config[:directory] = validate_directory config[:directory]
-            raise ArgumentError, "directory %s, but not extensions have been specified" % [ config[:directory]  ] unless config[:extensions]
-            raise ArgumentError, "the extensions %s does not matched the regex"         % [ config[:extensions] ] unless config[:extensions] =~ /^\*\.[[:alnum:]]+$/
-            # check: lets just check we have file in there
-            files = Dir.glob( "%s/%s" % [ config[:directory], config[:extensions] ] )
-            raise ArgumentError, "the doesn't appear to be any rules in this directory" unless files.size > 0
-            config[:files] = files.dup
-        end
-        # check: not sure how this could happen, but lets check anyhow
-        raise ArgumentError, "unable to find any rules to load" unless config[:files].size > 0
+        raise ArgumentError, "you have not defined directory to load the rules from"    unless config[:directory]
+        
+        config[:directory] = validate_directory config[:directory]
+        raise ArgumentError, "directory %s, but not extensions have been specified" % [ config[:directory]  ] unless config[:extensions]
+        raise ArgumentError, "the extensions %s does not matched the regex"         % [ config[:extensions] ] unless config[:extensions] =~ /^\*\.[[:alnum:]]+$/
+        # check: lets just check we have file in there
+        files = Dir.glob( "%s/%s" % [ config[:directory], config[:extensions] ] )
+        raise ArgumentError, "the doesn't appear to be any rules in this directory" unless files.size > 0
+        config[:files] = files.dup
         config 
     end
 

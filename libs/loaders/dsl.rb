@@ -22,10 +22,10 @@ class DSLLoader
         # check: we need to make sure sure the command doesn't exists already
         raise ArgumentError, "filename: %s, command: %s already exists"         % [ @options_file, name ] if @commands[name] 
         raise ArgumentError, "filename: %s, command: %s does not have a block"  % [ @options_file, name ] unless block_given?
-        cmd = Command::new
+        cmd             = Command::new
         cmd.command     = name
         cmd.description = description
-        loader = InputLoader.load( block )
+        loader          = InputLoader.load( block )
         cmd.inputs      = loader.inputs
         cmd.examples    = loader.examples
         @commands[name] = cmd

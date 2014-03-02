@@ -13,7 +13,7 @@ class Logger
 
         # :level => :debug
         # :std => out|err|file-name
-        def init(options)
+        def init( options )
             self.logger = ::Logger.new(options[:std] || STDOUT)
             self.logger.level= ::Logger.const_get "#{options[:level].to_s.upcase}"
         end
