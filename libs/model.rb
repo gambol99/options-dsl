@@ -24,10 +24,11 @@ class Options
     end
 end
 class Command
-    attr_accessor :command, :description, :inputs
-    def initialize
-        @command     = nil
-        @description = nil
+    attr_reader :name, :description
+    attr_accessor :inputs, :examples
+    def initialize name, description
+        @name        = name
+        @description = description
         @inputs      = {}
         @examples    = {}
     end
@@ -65,7 +66,7 @@ class Input
         @attributes.has_key? attribute
     end
     def method_missing(m, *args, &block) 
-        @attributes[m] = args.first if !args.empty?
+        @attributes[m] = args.first unless args.empty?
         return @attributes[m] if @attributes.has_key?( m )
         nil
     end

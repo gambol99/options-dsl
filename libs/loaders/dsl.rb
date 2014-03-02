@@ -9,6 +9,7 @@
 module OptionsDSL
 class DSLLoader
 
+    attr_reader   :commands, :validations, :options
     attr_accessor :options_file
 
     def initialize 
@@ -22,44 +23,32 @@ class DSLLoader
         # check: we need to make sure sure the command doesn't exists already
         raise ArgumentError, "filename: %s, command: %s already exists"         % [ @options_file, name ] if @commands[name] 
         raise ArgumentError, "filename: %s, command: %s does not have a block"  % [ @options_file, name ] unless block_given?
-        cmd             = Command::new
-        cmd.command     = name
-        cmd.description = description
-        loader          = InputLoader.load( block )
+        cmd             = Command::new name, description
+        loader          = InputLoader.load( &block )
         cmd.inputs      = loader.inputs
-        cmd.examples    = loader.examples
+        cmd.examples    = loader.usages
         @commands[name] = cmd
     end
-
-    def global name, description, &block
-        cmd = Command::new
-        cmd.command     = :global
-        cmd.description = description
-        loader = InputLoader.load( block )
-        cmd.inputs      = loader.inputs
-        cmd.examples    = loader.examples
-        @commands[name] = cmd
-    end
-
-    def options name, attributes
+    
+    def option name, attributes
         opts = Options::new name
         opts.short = attributes[:short]
         opts.long  = attributes[:long]
-        @switches << opts
+        @options[name] = opts
     end
 
     def validation name, attributes
         valid = Validation::new name, attributes
-        @validations << valid
+        @validations[name] = valid
     end
 
     def self.load filename 
         begin 
             Logger.debug 'load_file: loading the file: %s' % [ filename ]
-            input = new
-            input.options_file = filename
-            input.instance_eval( File.read( filename ), filename )
-            input
+            dsl = new
+            dsl.options_file = filename
+            dsl.instance_eval( File.read( filename ), filename )
+            dsl
         rescue Exception => e 
             Logger.error 'load_file: error loading file: %s, error: %s' % [ filename, e.message ]
             raise Exception, e.message

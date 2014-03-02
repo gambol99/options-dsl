@@ -6,6 +6,7 @@
 #
 $:.unshift File.join(File.dirname(__FILE__),'.','.')
 require 'optparse'
+require 'pp'
 require 'model'
 require 'utils'
 require 'loaders/dsl'
@@ -51,16 +52,17 @@ class Loader
     def load_option_parser options = @options
         begin
             @commands.values.each do |c|
-                @parsers[name] = OptionsParser::new do |o|
+                @parsers[c.name] = ::OptionParser::new do |o|
                     o.banner = c.description
                     o.separator ""
-                    c.inputs.each_pair do |name,input| 
+                    c.inputs.each_pair do |name,input|
                         o.on( input.options.short, input.options.long, input.description ) do |x|
                             validate_input x if defined? x
                         end
                     end
                 end
             end
+            PP.pp @parsers
         rescue Exception => e 
             Logger.error "load_option_parser: unable to generate the parsers, error: %s" % [ e.message ]
             raise Exception, e.message
@@ -71,7 +73,7 @@ class Loader
         # step: we iterate each of the options file and load them
         begin 
             @config[:files].each do |filename|
-                Logger.debug 'load_options: loading the file: %s' % [ filename ]
+                Logger.info 'load_options: loading the file: %s' % [ filename ]
                 loader = DSLLoader.load filename
                 # check: we need to validation the parsed options aginst anything we already have
                 loader = validate_options loader, filename
@@ -81,16 +83,17 @@ class Loader
             Logger.debug 'load_options: perform post linking and validation'
             # notes: we need to make sure all the commands options and validations exists and link them for ease
             @commands.values.each do |cmd|
+                Logger.debug 'load_options: processing the command: #{cmd.name}'
                 # step: iterate each of the inputs
                 cmd.inputs.values.each do |input|
                     unless @validations[input.validation]
                         raise ArgumentError, "the command: %s has validation: %s, but the validation does not exist" % [ input.name, input.validation ]
                     end
-                    input.validation = @validation[input.validation]
+                    input.validation @validations[input.validation]
                     unless @options[input.options]
                         raise ArgumentError, "the command: %s has options: %s, but the options does not exist" % [ input.name, input.options ]                        
                     end
-                    input.options = @options[input.options]
+                    input.options @options[input.options]
                 end
             end
         rescue Exception => e 
@@ -99,25 +102,25 @@ class Loader
         end
     end
 
-    def validate_options options, filename 
+    def validate_options loader, filename 
         Logger.debug 'validate_options: validating the options from file: #{filename}'
         # check: lets make sure the command hasn't been duplicated
-        options.commands.values.each do |x|
+        loader.commands.values.each do |x|
             raise ArgumentError, "the command: %s has been duplicated in filename: %s" % [ x.name, filename ] if @commands[x.name]
-            @commands[c.name] = c 
+            @commands[x.name] = x 
         end
         # check: lets look for duplcated validations
-        options.validations.values.each do |x|
+        loader.validations.values.each do |x|
             raise ArgumentError, "the validation: %s has been duplicated in filename: %s" % [ x.name, filename ] if @validations[x.name]
             @validations[x.name] = x 
         end
         # check: lets look for duplcated options
-        options.options.values.each do |x|
+        loader.options.values.each do |x|
             raise ArgumentError, "the option: %s has been duplicated in filename: %s" % [ x.name, filename ] if @options[x.name]
             @options[x.name] = x
         end
         Logger.debug 'validate_options: filename: #{filename} successfully passed validation'
-        options    
+        loader    
     end
 
     #
