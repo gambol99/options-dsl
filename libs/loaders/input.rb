@@ -15,7 +15,7 @@ class InputLoader
 
     def self.load &block
         command = new
-        command.instance_eval &block
+        command.instance_eval block
         command
     end
 
@@ -26,11 +26,11 @@ class InputLoader
         end
         # check: check we don't have a duplicate input 
         raise ArgumentError, "the input #{name} is already defined" if @input[name]
-        @inputs << Input::new name, attributes
+        @inputs << Input::new( name, attributes )
     end
 
     def example name, text
-        @examples << Example::new name, text
+        @examples << Example::new( name, text )
     end
 end
 end

@@ -4,7 +4,8 @@
 #
 #  vim:ts=4:sw=4:et
 #
-require 'optsparse'
+$:.unshift File.join(File.dirname(__FILE__),'.','.')
+require 'optparse'
 require 'model'
 require 'utils'
 require 'loaders/dsl'

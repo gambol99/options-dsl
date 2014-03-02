@@ -60,7 +60,7 @@ class DSLLoader
             input.options_file = filename
             input.instance_eval( File.read( filename ), filename )
             input
-        rescue Exception => 
+        rescue Exception => e 
             Logger.error 'load_file: error loading file: %s, error: %s' % [ filename, e.message ]
             raise Exception, e.message
         end
