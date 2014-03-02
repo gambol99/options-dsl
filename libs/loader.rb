@@ -61,8 +61,9 @@ class Loader
                         end
                     end
                 end
+                puts @parsers[c.name]
             end
-            PP.pp @parsers
+
         rescue Exception => e 
             Logger.error "load_option_parser: unable to generate the parsers, error: %s" % [ e.message ]
             raise Exception, e.message
