@@ -5,11 +5,14 @@
 #  vim:ts=4:sw=4:et
 #
 require 'model'
+require 'utils'
 require 'loaders/dsl'
 require 'loaders/input'
 
 module OptionsDSL
 class Loader
+
+    include Utils
 
     attr_reader :config, :options, :commands, :validations, :options
 
@@ -32,6 +35,7 @@ class Loader
         @options     = {}
         @config      = config 
         @options     = opts
+        @parsers     = {}
         # step: lets validate the config
         @config      = validate_config @config
         # step: lets load the command line dsl
@@ -45,9 +49,10 @@ class Loader
     private
     def load_option_parser options = @options
         begin
+            @commands.each_pair do |name,c|
 
 
-
+            end
         rescue Exception => e 
             Logger.error "load_option_parser: unable to generate the parsers, error: %s" % [ e.message ]
             raise Exception, e.message
@@ -130,47 +135,6 @@ class Loader
         config 
     end
 
-    def validate_directory directory
-        raise ArgumentError, "the directory #{directory} does not exist"        unless File.exists? directory
-        raise ArgumentError, "the directory #{directory} is not a directory"    unless File.directory? directory
-        raise ArgumentError, "the directory #{directory} is not readable"       unless File.readable? directory
-        directory
-    end
-
-    def validate_options_file filename
-        raise ArgumentError, "the filename #{filename} does not exists"         unless File.exists? filename
-        raise ArgumentError, "the filename #{filename} is not readable"         unless File.readable? filename
-        raise ArgumentError, "the filename #{filename} is not a regular file"   unless File.file? filename
-        filename      
-    end
+    
 end
-
-
-class InputLoader 
-    def initialize 
-        @inputs   = {}
-        @examples = {}
-    end
-
-    def self.load &block
-        command = new
-        command.instance_eval &block
-        command
-    end
-
-    def input name, attributes
-        # check: the input MUST contain description, options, validation and optional
-        [ :description, :optional, :options, :validation ].map do |x|
-            raise ArgumentError, "the input: #{name} does not include a ${x} attribute" unless attribute.has_key? x
-        end
-        # check: check we don't have a duplicate input 
-        raise ArgumentError, "the input #{name} is already defined" if @input[name]
-        @inputs << Input::new name, attributes
-    end
-
-    def example name, text
-        @examples << Example::new name, text
-    end
-end
-
 end # end of the module
