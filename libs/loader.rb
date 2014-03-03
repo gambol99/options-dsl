@@ -6,95 +6,80 @@
 #
 $:.unshift File.join(File.dirname(__FILE__),'.','.')
 require 'optparse'
-require 'pp'
 require 'model'
 require 'utils'
 require 'loaders/dsl'
 require 'loaders/input'
+require 'generate/generate'
 
 module OptionsDSL
 class Loader
 
     include Utils
 
-    attr_reader :config, :options, :commands, :validations, :options
-
-    @@default_config = {
-        :extention  => '*.ddl',
-        :directory  => 'examples/',
-        :log_level  => false
-    }
-
     # 
     # method: initialize
-    # config: the options for the loader; we need either a filename or a directory,
-    #          with extenions specified; 
-    # opts:    default options 
-    def initialize config = @@default_options, opts = {}
+    # config: the options for the loader; we need either a filename or a directory with extenions specified; 
+    # 
+    def initialize config, options
         # step: setup the variable
-        @commands    = {}
-        @validations = {}
-        @options     = {}
+        @options     = options
+        @rules       = OptionsDSL::Rules::new
         @config      = config 
-        @options     = opts
-        @parsers     = {}
         # step: lets validate the config
         @config      = validate_config @config
         # step: lets load the command line dsl
-        load_options @options
+        load_options
         # step: we need to generate the parser
-        load_option_parser @options
+        @generate    = OptionsDSL::Generate::new @rules, @options
         # step: return the options
+    end
+
+    def parse!
+        begin
+            Logger.debug 'parse!: parsing the command line options' 
+            @options = @generate.parse options
+        rescue Exception => e 
+            Logger.error 'parse!: error parsing the command line options, error: %s' % [ e.message ]
+            raise Exception, e.message
+        end
         @options
     end
 
     private
-    def load_option_parser options = @options
-        begin
-            @commands.values.each do |c|
-                @parsers[c.name] = ::OptionParser::new do |o|
-                    o.banner = c.description
-                    o.separator ""
-                    c.inputs.each_pair do |name,input|
-                        o.on( input.options.short, input.options.long, input.description ) do |x|
-                            validate_input x if defined? x
-                        end
-                    end
-                end
-                puts @parsers[c.name]
-            end
-
-        rescue Exception => e 
-            Logger.error "load_option_parser: unable to generate the parsers, error: %s" % [ e.message ]
-            raise Exception, e.message
-        end
-    end
-
-    def load_options options = @options
+    #
+    # method: load_options
+    # description: the method iterates the rules files and loads the dsl strcuture. Post loading the rules
+    # are then parsed again to validate the options and validations exist and link them into the inputs
+    #
+    def load_options
         # step: we iterate each of the options file and load them
         begin 
             @config[:files].each do |filename|
                 Logger.info 'load_options: loading the file: %s' % [ filename ]
                 loader = DSLLoader.load filename
                 # check: we need to validation the parsed options aginst anything we already have
-                loader = validate_options loader, filename
+                loader = validate_rules loader, filename
                 # step: add the parsed entried into the collected items
-            end 
+            end
             # step: all the files have been loaded, we do need to perform some post analysis tho and linking
             Logger.debug 'load_options: perform post linking and validation'
             # notes: we need to make sure all the commands options and validations exists and link them for ease
-            @commands.values.each do |cmd|
-                Logger.debug 'load_options: processing the command: #{cmd.name}'
+            @rules.commands.each_pair do |name,command|
+                Logger.debug 'load_options: processing the command: #{name}'
                 # step: iterate each of the inputs
-                cmd.inputs.values.each do |input|
-                    unless @validations[input.validation]
-                        raise ArgumentError, "the command: %s has validation: %s, but the validation does not exist" % [ input.name, input.validation ]
+                command.inputs.each_pair do |input_name,input|
+                    ## Validations ===
+                    unless @rules.validation? input.validation
+                        raise ArgumentError, "command: '%s' has validation: '%s' but the validation does not exist" % [ input_name, input.validation ]
                     end
-                    input.validation @validations[input.validation]
-                    unless @options[input.options]
-                        raise ArgumentError, "the command: %s has options: %s, but the options does not exist" % [ input.name, input.options ]                        
+                    # step: lets link the validation into the input
+                    input.validation @rules.validations[input.validation]
+                    ## Options ===
+                    unless @rules.option? input.options
+                        raise ArgumentError, "command: '%s' has options: '%s' but the options does not exist" % [ input_name, input.options ]                        
                     end
-                    input.options @options[input.options]
+                    input.options @rules.options[input.options]
                 end
             end
         rescue Exception => e 
@@ -103,24 +88,29 @@ class Loader
         end
     end
 
-    def validate_options loader, filename 
-        Logger.debug 'validate_options: validating the options from file: #{filename}'
+    #
+    # method: validate_rules
+    # description: once a dsl file has been loaded we double check the structure to ensure we have
+    # no duplicates 
+    #
+    def validate_rules loader, filename 
+        Logger.debug 'validate_rules: validating the options from file: #{filename}'
         # check: lets make sure the command hasn't been duplicated
         loader.commands.values.each do |x|
-            raise ArgumentError, "the command: %s has been duplicated in filename: %s" % [ x.name, filename ] if @commands[x.name]
-            @commands[x.name] = x 
+            raise ArgumentError, "the command: %s has been duplicated in filename: %s" % [ x.name, filename ] if @rules.commands[x.name]
+            @rules.commands[x.name] = x 
         end
         # check: lets look for duplcated validations
         loader.validations.values.each do |x|
-            raise ArgumentError, "the validation: %s has been duplicated in filename: %s" % [ x.name, filename ] if @validations[x.name]
-            @validations[x.name] = x 
+            raise ArgumentError, "the validation: %s has been duplicated in filename: %s" % [ x.name, filename ] if @rules.validations[x.name]
+            @rules.validations[x.name] = x 
         end
         # check: lets look for duplcated options
         loader.options.values.each do |x|
-            raise ArgumentError, "the option: %s has been duplicated in filename: %s" % [ x.name, filename ] if @options[x.name]
-            @options[x.name] = x
+            raise ArgumentError, "the option: %s has been duplicated in filename: %s" % [ x.name, filename ] if @rules.options[x.name]
+            @rules.options[x.name] = x
         end
-        Logger.debug 'validate_options: filename: #{filename} successfully passed validation'
+        Logger.debug 'validate_rules: filename: #{filename} successfully passed validation'
         loader    
     end
 
@@ -142,7 +132,6 @@ class Loader
         config[:files] = files.dup
         config 
     end
-
     
 end
 end # end of the module

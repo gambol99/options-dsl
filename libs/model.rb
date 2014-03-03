@@ -5,32 +5,34 @@
 #  vim:ts=4:sw=4:et
 #
 module OptionsDSL
-class Options
-    attr_reader :commands, :validations, :options
+class Rules
+    attr_accessor :commands, :validations, :options
+    attr_reader   :parser
     def initialize
         @commands    = {}
         @validations = {}
         @options     = {}
+        @parser      = {}
     end
-    def add_validation v
-        raise ArgumentError, "the validation %s already exists, please check the rules" % [ v.name ] if @validations.has_key? v.name
-        @validations[v.name] = v
+    def validation? name
+        @validations.has_key? name
     end
-    def add_option option
-        @options[option.name] = option
+    def command? name
+        @commands.has_key name
     end
-    def add_command command
-        @commands[command.name] = command
+    def option? name
+        @options.has_key? name
     end
 end
 class Command
-    attr_reader :name, :description
+    attr_reader :name, :description, :usage
     attr_accessor :inputs, :examples
     def initialize name, description
         @name        = name
         @description = description
         @inputs      = {}
-        @examples    = {}
+        @examples    = nil
+        @usage       = nil
     end
 end
 class Validation

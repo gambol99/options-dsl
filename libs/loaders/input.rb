@@ -12,8 +12,7 @@ class InputLoader
 
     def initialize 
         @inputs  = {}
-        @usages  = {}
-        puts "creating the input"
+        @usages  = []
     end
 
     def self.load &block
@@ -33,7 +32,7 @@ class InputLoader
     end
 
     def example name, text
-        @usages[name] = Example::new( name, text )
+        @usages << Example::new( name, text )
     end
 end
 end
