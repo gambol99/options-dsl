@@ -15,6 +15,7 @@ class Generate
     def initialize rules, options = {}
         @parser  = parsers rules 
         @options = options
+        @cursor  = @options
     end
 
     private
@@ -43,6 +44,7 @@ class Generate
 
     def validate_input input, argument
         begin
+            return if argument == nil
             # step: lets validate the input against the validation regex
             unless argument =~ input.validation.regex
                 raise ArgumentError, "invalid argument: the option: '%s' does not match validation: %s" % [ input.name, input.validation ]
@@ -57,8 +59,23 @@ class Generate
                 @options[input.name] = argument.to_i
             when :float
                 @options[input.name] = argument.to_f
+            when :hash
+                @options[input.name] = {}
+                @options[input.name] = {
+                    argument.to_sym => {}
+                }
+                @cursor[@options[input.name]]
+            when :attribute
+                Logger.debug 'validate_input: the attribute cusror has not been set'                    unless @cursor
+                raise ArgumentError, 'you need to specify a parent before you can assign an attribute'  unless @cursor
+                arg.split('/').each do |item|
+                    if argument =~ /^(.*)=(.*)$/
+                        @cursor[$1] = $2
+                    else
+                        @cursor[item] = {}
+                    end
+                end
             end
-
         rescue Exception => e 
             Logger.error 'validate_input: unable to process the input, error: %s' % [ e.message ]
             raise Exception, e.message

@@ -75,7 +75,7 @@ command :up, 'used to bring up and virtual instance' do
         :options        => :processors,
         :optional       => false
 
-    input :class,
+    input :classes,
         :description    => 'assign a puppet class to this instance',
         :validation     => :puppet_class,
         :options        => :puppet_class,
@@ -280,7 +280,7 @@ validation :ipaddress,
     :regex      => /^([0-9]{1,3}\.){3}[0-9]{1,2}$/
 
 validation :puppet_class,
-    :format     => :string,
+    :format     => :hash,
     :regex      => /^[[:alpha:]\:]+$/
 
 validation :puppet_attribute,
