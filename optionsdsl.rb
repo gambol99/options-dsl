@@ -8,9 +8,9 @@
 module OptionsDSL
     ROOT = File.expand_path File.dirname __FILE__
 
-    autoload :Version,  "#{ROOT}/libs/version"
-    autoload :Loader,   "#{ROOT}/libs/loader"  
-    autoload :Logger,   "#{ROOT}/libs/logger"
+    autoload :Version,  "#{ROOT}/lib/version"
+    autoload :Loader,   "#{ROOT}/lib/loader"  
+    autoload :Logger,   "#{ROOT}/lib/logger"
 
     def self.version
         OptionsDSL::VERSION

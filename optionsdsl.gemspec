@@ -15,7 +15,7 @@ Gem::Specification.new do |s|
     s.rubyforge_project = 'optionsdsl'
     s.email       = 'gambol99@gmail.com'
     s.files       = [ "README.md", "optionsdsl.gemspec", "optionsdsl.rb",
-    "libs/loader.rb", "libs/logger.rb", "libs/model.rb", "libs/utils.rb", "libs/version.rb", "libs/generate/generate.rb", "libs/loaders/dsl.rb", "libs/loaders/input.rb", 
+    "lib/loader.rb", "lib/logger.rb", "lib/model.rb", "lib/utils.rb", "lib/version.rb", "lib/generate/generate.rb", "lib/loaders/dsl.rb", "lib/loaders/input.rb", 
     "tests/test.rb", "examples/example.dsl", "optionsdsl.gemspec", "optionsdsl.rb" ]
     s.homepage    = 'http://rubygems.org/gems/optionsdsl'
     s.license     = 'MIT'
