@@ -1,6 +1,8 @@
 Options DSL
 ===========
 
+Notes: Still needs some work :-)
+
 OptionsDSL is a library for defining command line options (albeit it could be used for other argument processing). The options, including global flags / switches and validation code can also be used to for subcommand; i.e. ./scipt.rb <command> [options]
 
 The DSL can been loaded from a single file or multiple files from a directory;  The OptionsDSL class requires the following
