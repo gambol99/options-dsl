@@ -12,10 +12,11 @@ Gem::Specification.new do |s|
     s.summary     = "Command line options dsl"
     s.description = "OptionsDSL provides a ruby dsl for defining, validation and bundling comand line options"
     s.authors     = ["Rohith Jayawardene"]
+    s.rubyforge_project = 'optionsdsl'
     s.email       = 'gambol99@gmail.com'
-    s.files       = [ "Gemfile", "README.md", "optionsdsl.gemspec", "optionsdsl.rb",
-                      "libs/generate/generate.rb", "libs/loaders/dsl.rb", "libs/loaders/input.rb", "tests/test.rb", "examples/example.dsl",
-                      "Gemfile", "README.md",  "optionsdsl.gemspec", "optionsdsl.rb" ]
+    s.files       = [ "README.md", "optionsdsl.gemspec", "optionsdsl.rb",
+    "libs/loader.rb", "libs/logger.rb", "libs/model.rb", "libs/utils.rb", "libs/version.rb", "libs/generate/generate.rb", "libs/loaders/dsl.rb", "libs/loaders/input.rb", 
+    "tests/test.rb", "examples/example.dsl", "optionsdsl.gemspec", "optionsdsl.rb" ]
     s.homepage    = 'http://rubygems.org/gems/optionsdsl'
     s.license     = 'MIT'
 end
