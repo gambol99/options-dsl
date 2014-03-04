@@ -55,6 +55,11 @@ class Generate
                 cursor[:switches][x] = true if x =~ /^-{1,2}/
             end
         end
+        # step: if the we are --help|-h .. lets bypasss the rest, as it's useless
+        if batches.select { |k,v| v[:switches] if v[:switches]['--help'] or v[:switches]['-h'] }.size >= 1
+            return batches
+        end
+        
         # step: iterate the batch (command) and add any options which have defaults and check added
         batches.each_pair do |command,batch|
             # we don't care about a command that has not been selected
