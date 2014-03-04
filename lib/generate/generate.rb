@@ -20,14 +20,13 @@ class Generate
     end
 
     def parse! arguments = ARGV
-        # step: we need to group the command into batches and process via the respective parser
-        batches = process_batches arguments
         begin 
+             # step: we need to group the command into batches and process via the respective parser
+            batches = process_batches arguments 
+            #PP.pp batches
             batches.each_pair do |command,batch|
                 @rules.parser[command].parse! batch[:arguments]
             end
-            # step: we have to make sure everything was non-optional is there
-
         rescue ArgumentError => e 
             Logger.error "parse! argument error: %s" % [ e.message ]
             raise ArgumentError, e.message
@@ -37,17 +36,16 @@ class Generate
 
     private
     # description: the method carves up the command line options into the respective processors
-    def process_batches arguments 
+    def process_batches arguments, &block
+        # step: we setup the batches for filling in later
         batches = @rules.commands.keys.inject({}) do |h,arg|
-            h[arg] = {
-                :arguments => [],
-                :switches  => {},
-                :selected  => false
-            } 
+            h[arg] = { :arguments => [], :switches => {}, :selected => false } 
             h
         end
+        # step: global is always turned on 
         cursor = batches[:global]
         cursor[:selected]  = true
+        # step: we iterate the arguments and seperate them into their batch 
         arguments.map do |x|
             if batches.include? x.to_sym
                 cursor            = batches[x.to_sym]
@@ -57,23 +55,29 @@ class Generate
                 cursor[:switches][x] = true if x =~ /^-{1,2}/
             end
         end
-        process_defaults batches
-    end
-
-    def process_defaults batches
+        # step: iterate the batch (command) and add any options which have defaults and check added
         batches.each_pair do |command,batch|
+            # we don't care about a command that has not been selected
             next unless batch[:selected] 
+            # step: we iterate the input for this command
             @rules.commands[command].inputs.each_pair do |input_name,input|
                 next if input.optional
-                short_switch = $1 if input.options.short and input.options.short =~ /(-{1,2}[[:alpha:]]+) / 
-                long_switch  = $1 if input.options.short and input.options.long  =~ /(-{1,2}[[:alpha:]]+) / 
-                # check: is neither of the switches are being used
-                if !batch[:switches].has_key? short_switch  and !batch[:switches].has_key? long_switch
-                    batch[:switches][short_switch || long_switch ] = true
-                    batch[:arguments] << short_switch || long_switch
-                    batch[:arguments] << input.defaults
-                    next
+                short_switch   = $1 if input.options.short and input.options.short =~ /(-{1,2}[[:alpha:]]+) / 
+                long_switch    = $1 if input.options.short and input.options.long  =~ /(-{1,2}[[:alpha:]]+) / 
+                switch_exists  = ( !batch[:switches].has_key? short_switch  and !batch[:switches].has_key? long_switch ) ? false : true
+                #puts "input: %s, switch_exists: %s, short: %s, long: %s" % [ input_name, switch_exists, short_switch, long_switch ]
+                # check: if we don't have :defaults on the input and the switch has not set - throw require argument
+                if !switch_exists and !input.defaults
+                    raise ArgumentError, "the argument %s (%s/%s) is a required parameter, please check usage" % 
+                        [ input.name, input.options.short, input.options.long ]
                 end
+                # step: we can bypass this one if it's already set
+                next if switch_exists
+                # step: the argument is not specified but the input has a :defaults - hence we inject the parameters
+                # in as if was passed on the command line. 
+                batch[:switches][short_switch || long_switch ] = true
+                batch[:arguments] << short_switch || long_switch
+                batch[:arguments] << input.defaults
             end
         end
         batches
