@@ -38,8 +38,10 @@ class Loader
     def parse!
         begin
             Logger.debug 'parse!: parsing the command line options' 
-            @options = @generate.parse options
-        rescue Exception => e 
+            @generate.parse!
+        rescue SystemExit => e 
+        rescue Exception  => e 
+            puts e.message
             Logger.error 'parse!: error parsing the command line options, error: %s' % [ e.message ]
             raise Exception, e.message
         end

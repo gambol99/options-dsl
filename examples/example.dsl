@@ -84,6 +84,7 @@ command :up, 'used to bring up and virtual instance' do
     input :class_attribute,
         :description    => 'add a class attribute to the last class defined',
         :validation     => :puppet_attribute,
+        :parent         => :classes,
         :options        => :puppet_attribute,
         :optional       => true
 
