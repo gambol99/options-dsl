@@ -257,7 +257,7 @@ validation :filename,
 
 validation :hostname,
     :format     => :string,
-    :regex      => /^[[:alpha:]\-]{,10}[0-9]{3}-[[:alnum:]]{2,5}$/
+    :regex      => /^[[:alpha:]\-]{4,10}[0-9]{3}-[[:alnum:]]{2,5}$/
 
 validation :formation_action,
     :format     => :string,

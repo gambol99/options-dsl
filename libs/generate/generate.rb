@@ -18,15 +18,43 @@ class Generate
         @cursor  = @options
     end
 
+    def parse! 
+        
+
+
+    end
+
     private
+    #
+    # method: takes the dsl structure and generates the parsers from it
     def parsers rules = @rules
+        @parser = {}
         begin
+            if rules.commands.has_key? :global
+                global = rules.commands[:global]
+                rules.parser[:global] = ::OptionParser::new do |o|
+                    o.banner = "script [global options] [subcommand] [options]" 
+                    o.separator ""
+                    o.separator "\tGlobal Options:"
+                    o.separator "\t==============="
+                    o.separator ""
+                    global.inputs.each_pair do |name,input|
+                        o.on( input.options.short, input.options.long, input.description ) do |x|
+                            validate_input input, x if defined? x
+                        end
+                    end
+                    if rules.commands.size > 1 
+                        o.separator ""
+                        o.separator "\tSubcommands: script subcommand [options]"
+                        o.separator "\t========================================"
+                    end
+                end
+            end
             rules.commands.values.each do |c|
+                next if c.name == :global
                 rules.parser[c.name] = ::OptionParser::new do |o|
                     o.banner = ''
-                    o.separator "\tCommand: %s\n"      % [ c.name  ]
-                    o.separator "\tUsage: %s\n"        % [ c.usage ] if c.usage
-                    o.separator "\tDescription: %s\n"  % [ c.description ]
+                    o.separator "\tcommand: [%s]:    %s\n"           % [ c.name, c.description ]
                     o.separator ""
                     c.inputs.each_pair do |name,input|
                         o.on( input.options.short, input.options.long, input.description ) do |x|
@@ -34,7 +62,6 @@ class Generate
                         end
                     end
                 end
-                puts rules.parser[c.name]
             end
         rescue Exception => e 
             Logger.error "load_option_parser: unable to generate the parsers, error: %s" % [ e.message ]
