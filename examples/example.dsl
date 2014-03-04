@@ -127,6 +127,13 @@ command :ssh, 'use vagrant to ssh into the box' do
         :options        => :hostname,
         :optional       => false
 
+    input :username,
+        :description    => 'the username you wish to login as',
+        :defaults       => 'vagrant',
+        :validation     => :username,
+        :options        => :username,
+        :optional       => true
+
     example 'ssh into in to a running instance',
         'ssh -H hostname [options]'
 
@@ -230,6 +237,10 @@ option :schema,
     :short  => '-s schema',
     :long   => '--schema schema'
 
+option :username,
+    :short  => '-u username',
+    :long   => '--username username'
+
 option :vagrant,
     :short  => '-V vagrant_command',
     :long   => '--vagrant vagrant_command'
@@ -289,5 +300,9 @@ validation :puppet_attribute,
     :regex      => /.*/
 
 validation :regex,
+    :format     => :string,
+    :regex      => /.*/
+
+validation :username,
     :format     => :string,
     :regex      => /.*/
