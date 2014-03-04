@@ -9,7 +9,7 @@ The DSL can been loaded from a single file or multiple files from a directory;  
 
     config = {
         :directory  => '/my/directory/of/rules',       # the full path to the directory,
-        :files      => '*.ddl'                         # the regex to determine which file/s to read
+        :extensions => '*.ddl'                         # the regex to determine which file/s to read
         :log_level  => [nil,:info|:warn|:debug]        # the logging level to employ
     }
     # the second argument can be used to pass some default options
