@@ -5,18 +5,25 @@
 #
 #  vim:ts=4:sw=4:et
 #
+$:.unshift File.join(File.dirname(__FILE__),'.','lib' )
+require 'version'
+
 Gem::Specification.new do |s|
-    s.name        = 'optionsdsl'
-    s.version     = '0.0.1'
+    s.name        = "optionsdsl"
+    s.version     = OptionsDSL::VERSION
+    s.platform    = Gem::Platform::RUBY
     s.date        = '2014-03-04'
-    s.summary     = "Command line options dsl"
-    s.description = "OptionsDSL provides a ruby dsl for defining, validation and bundling comand line options"
     s.authors     = ["Rohith Jayawardene"]
-    s.rubyforge_project = 'optionsdsl'
     s.email       = 'gambol99@gmail.com'
-    s.files       = [ "README.md", "optionsdsl.gemspec", "optionsdsl.rb",
-    "lib/loader.rb", "lib/logger.rb", "lib/model.rb", "lib/utils.rb", "lib/version.rb", "lib/generate/generate.rb", "lib/loaders/dsl.rb", "lib/loaders/input.rb", 
-    "examples/example.dsl", "optionsdsl.gemspec", "optionsdsl.rb" ]
     s.homepage    = 'http://rubygems.org/gems/optionsdsl'
+    s.summary     = %q{Command line options dsl}
+    s.description = %q{OptionsDSL provides a ruby dsl for defining, validation and bundling comand line options.}
     s.license     = 'MIT'
+
+    s.add_dependency 'sinatra'
+
+    s.files         = `git ls-files`.split("\n")
+    s.test_files    = `git ls-files -- {test,spec,features}/*`.split("\n")
+    s.executables   = `git ls-files -- bin/*`.split("\n").map{ |f| File.basename(f) }
+    s.require_paths = ["lib"]
 end
