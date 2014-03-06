@@ -148,14 +148,9 @@ end
 #end
 
 command :formation, 'bring up a complete formation of machines' do 
-    input :formation,
-        :description    => 'the full path to the formation file',
-        :validation     => :filename,
-        :options        => :formation,
-        :optional       => false
-
     input :action,
         :description    => 'the action to perform on the formation, up, down, destroy',
+        :defaults       => 'form',
         :validation     => :formation_action,
         :options        => :formation_action,
         :optional       => false
@@ -273,7 +268,7 @@ validation :hostname,
 
 validation :formation_action,
     :format     => :string,
-    :regex      => /^(up|down|destroy)$/
+    :regex      => /^(form|down)$/
 
 validation :schema,
     :format     => :string,
