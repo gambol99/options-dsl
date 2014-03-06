@@ -132,7 +132,7 @@ class Generate
                             validate_input input, x if defined? x
                         end
                         o.on( '-h', '--help', 'display the help usage menu' ) do 
-                            puts self
+                            puts rules.parser[c.name]
                             exit 0
                         end
                     end
