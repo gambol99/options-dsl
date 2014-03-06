@@ -55,8 +55,8 @@ class Loader
         rescue ArgumentError => e 
             raise ArgumentError, e.message
         rescue SystemExit => e 
+            raise SystemExit
         rescue Exception  => e 
-            puts e.message
             Logger.error 'parse!: error parsing the command line options, error: %s' % [ e.message ]
             raise Exception, e.message
         end

@@ -27,9 +27,14 @@ class Generate
             batches.each_pair do |command,batch|
                 @rules.parser[command].parse! batch[:arguments]
             end
+        rescue SystemExit => e 
+            raise SystemExit
         rescue ArgumentError => e 
             Logger.error "parse! argument error: %s" % [ e.message ]
             raise ArgumentError, e.message
+        rescue Exception  => e
+            puts "ys"
+            raise Exception, e.message
         end
         @options
     end
@@ -138,6 +143,8 @@ class Generate
                     end
                 end
             end
+        rescue SystemExit => e  
+            raise SystemExit
         rescue ArgumentError => e
             Logger.error 'load_option_parser: argument error: %s' % [ e.message ]
             raise ArgumentError, e.message
