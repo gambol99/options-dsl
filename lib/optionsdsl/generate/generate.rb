@@ -117,6 +117,7 @@ class Generate
                             next if command.name == :global
                             puts rules.parser[command.name]
                         end
+                        exit 0
                     end
                 end
             end
@@ -129,6 +130,10 @@ class Generate
                     c.inputs.each_pair do |name,input|
                         o.on( input.options.short, input.options.long, input.description ) do |x|
                             validate_input input, x if defined? x
+                        end
+                        o.on( '-h', '--help', 'display the help usage menu' ) do 
+                            puts self
+                            exit 0
                         end
                     end
                 end
