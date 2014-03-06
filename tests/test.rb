@@ -5,7 +5,7 @@
 #
 #  vim:ts=4:sw=4:et
 #
-$:.unshift File.join(File.dirname(__FILE__),'.','..')
+#$:.unshift File.join(File.dirname(__FILE__),'.','..')
 require 'rubygems' if RUBY_VERSION < '1.9.0'
 require 'optionsdsl'
 require 'pp'
@@ -26,6 +26,7 @@ begin
     puts "Options Generated: (processed time: %d ms)" % [ time_taken ]
     PP.pp options
 rescue ArgumentError => e 
+	puts e.message
 	cli.usage e.message
 end
 
