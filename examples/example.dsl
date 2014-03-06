@@ -148,9 +148,14 @@ end
 #end
 
 command :formation, 'bring up a complete formation of machines' do 
+    input :formation,
+        :description    => 'the formatton you wish to act upon',
+        :validation     => :formation,
+        :options        => :formation,
+        :optional       => false
+
     input :action,
         :description    => 'the action to perform on the formation, up, down, destroy',
-        :defaults       => 'form',
         :validation     => :formation_action,
         :options        => :formation_action,
         :optional       => false
@@ -189,8 +194,8 @@ option :classification,
     :long   => '--classify filename'
 
 option :formation,
-    :short  => '-f filename',
-    :long   => '--formation filename'
+    :short  => '-f name',
+    :long   => '--formation name'
 
 option :formation_action,
     :short  => '-a action',
@@ -265,6 +270,10 @@ validation :filename,
 validation :hostname,
     :format     => :string,
     :regex      => /^[[:alpha:]\-]{4,10}[0-9]{3}-[[:alnum:]]{2,5}$/
+
+validation :formation,
+    :format     => :string,
+    :regex      => /^[[:alnum:]]+$/
 
 validation :formation_action,
     :format     => :string,

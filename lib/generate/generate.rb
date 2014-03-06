@@ -95,7 +95,7 @@ class Generate
             if rules.commands.has_key? :global
                 global = rules.commands[:global]
                 rules.parser[:global] = ::OptionParser::new do |o|
-                    o.banner = "script [global options] [subcommand] [options]" 
+                    o.banner = "\tscript [global options] [subcommand] [options]" 
                     o.separator ""
                     o.separator "\tGlobal Options:"
                     o.separator "\t==============="
@@ -133,6 +133,9 @@ class Generate
                     end
                 end
             end
+        rescue ArgumentError => e
+            Logger.error 'load_option_parser: argument error: %s' % [ e.message ]
+            raise ArgumentError, e.message
         rescue Exception => e 
             Logger.error "load_option_parser: unable to generate the parsers, error: %s" % [ e.message ]
             raise Exception, e.message
@@ -170,8 +173,11 @@ class Generate
                     end
                 end
             end
-        rescue Exception => e 
+        rescue ArgumentError => e 
             Logger.error 'validate_input: unable to process the input, error: %s' % [ e.message ]
+            raise ArgumentError, e.message
+        rescue Exception => e 
+            Logger.error 'validate_input: an internal error encounter, %s' % [ e.message ]
             raise Exception, e.message
         end
     end

@@ -17,10 +17,15 @@ config = {
     
 options    = {}
 start_time = Time.now 
-cli        = OptionsDSL.load config, options 
-options    = cli.parse!
-time_taken = ( Time.now - start_time ) * 1000
+cli        = nil
+begin  
+    cli        = OptionsDSL.load config, options 
+    options    = cli.parse!
+    time_taken = ( Time.now - start_time ) * 1000
+    puts ""
+    puts "Options Generated: (processed time: %d ms)" % [ time_taken ]
+    PP.pp options
+rescue ArgumentError => e 
+	cli.usage e.message
+end
 
-puts ""
-puts "Options Generated: (processed time: %d ms)" % [ time_taken ]
-PP.pp options

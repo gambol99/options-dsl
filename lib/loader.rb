@@ -35,10 +35,25 @@ class Loader
         # step: return the options
     end
 
+    def usage message
+        puts @rules.parser[:global]
+        @rules.parser.each_pair do |name,parser|
+            next if name == :global
+            puts parser
+        end
+        if message
+            puts "\n[Error]: #{message}"
+            exit 1
+        end
+        exit 0
+    end
+
     def parse!
         begin
             Logger.debug 'parse!: parsing the command line options' 
             @generate.parse!
+        rescue ArgumentError => e 
+            raise ArgumentError, e.message
         rescue SystemExit => e 
         rescue Exception  => e 
             puts e.message
