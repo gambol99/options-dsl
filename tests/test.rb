@@ -5,7 +5,7 @@
 #
 #  vim:ts=4:sw=4:et
 #
-#$:.unshift File.join(File.dirname(__FILE__),'.','..')
+$:.unshift File.join(File.dirname(__FILE__),'.','../lib')
 require 'rubygems' if RUBY_VERSION < '1.9.0'
 require 'optionsdsl'
 require 'pp'

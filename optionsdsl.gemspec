@@ -5,7 +5,7 @@
 #
 #  vim:ts=4:sw=4:et
 #
-$:.unshift File.join(File.dirname(__FILE__),'.','lib' )
+$:.unshift File.join(File.dirname(__FILE__),'.','lib/optionsdsl' )
 require 'version'
 
 Gem::Specification.new do |s|
