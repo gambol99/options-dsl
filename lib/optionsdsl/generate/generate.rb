@@ -33,7 +33,6 @@ class Generate
             Logger.error "parse! argument error: %s" % [ e.message ]
             raise ArgumentError, e.message
         rescue Exception  => e
-            puts "ys"
             raise Exception, e.message
         end
         @options
@@ -157,7 +156,7 @@ class Generate
     def validate_input input, argument
         begin
             # step: we assume all options which do not have an option are boolean
-            if argument == nil
+            if argument.class == TrueClass
                 @options[input.name] = true
                 return
             end
