@@ -156,7 +156,7 @@ class Generate
     def validate_input input, argument
         begin
             # step: we assume all options which do not have an option are boolean
-            if argument.class == TrueClass
+            if argument.class == TrueClass or argument.class == FalseClass
                 @options[input.name] = true
                 return
             end
