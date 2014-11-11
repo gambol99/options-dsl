@@ -15,24 +15,24 @@ class InputLoader
         @usages  = []
     end
 
-    def self.load &block
-        command = new
-        command.instance_eval &block
-        command
+    def self.load(&block)
+      command = new
+      command.instance_eval &block
+      command
     end
 
-    def input name, attributes
-        # check: the input MUST contain description, options, validation and optional
-        [ :description, :optional, :options, :validation ].map do |x|
-            raise ArgumentError, "the input: #{name} does not include a ${x} attribute" unless attributes.has_key? x
-        end
-        # check: check we don't have a duplicate input 
-        raise ArgumentError, "the input #{name} is already defined" if @inputs[name]
-        @inputs[name] = Input::new( name, attributes )
+    def input(name, attributes)
+      # check: the input MUST contain description, options, validation and optional
+      [:description, :optional, :options, :validation].map do |x|
+        raise ArgumentError, "the input: #{name} does not include a ${x} attribute" unless attributes.has_key? x
+      end
+      # check: check we don't have a duplicate input
+      raise ArgumentError, "the input #{name} is already defined" if @inputs[name]
+      @inputs[name] = Input::new(name, attributes)
     end
 
-    def example name, text
-        @usages << Example::new( name, text )
+    def example(name, text)
+      @usages << Example::new(name, text)
     end
 end
 end

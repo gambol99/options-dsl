@@ -8,18 +8,18 @@
 module OptionsDSL
 module Utils
 
-    def validate_directory directory
-        raise ArgumentError, "the directory #{directory} does not exist"        unless File.exists? directory
-        raise ArgumentError, "the directory #{directory} is not a directory"    unless File.directory? directory
-        raise ArgumentError, "the directory #{directory} is not readable"       unless File.readable? directory
-        directory
+    def validate_directory(directory)
+      raise ArgumentError, "the directory #{directory} does not exist" unless File.exists? directory
+      raise ArgumentError, "the directory #{directory} is not a directory" unless File.directory? directory
+      raise ArgumentError, "the directory #{directory} is not readable" unless File.readable? directory
+      directory
     end
 
-    def validate_options_file filename
-        raise ArgumentError, "the filename #{filename} does not exists"         unless File.exists? filename
-        raise ArgumentError, "the filename #{filename} is not readable"         unless File.readable? filename
-        raise ArgumentError, "the filename #{filename} is not a regular file"   unless File.file? filename
-        filename      
+    def validate_options_file(filename)
+      raise ArgumentError, "the filename #{filename} does not exists" unless File.exists? filename
+      raise ArgumentError, "the filename #{filename} is not readable" unless File.readable? filename
+      raise ArgumentError, "the filename #{filename} is not a regular file" unless File.file? filename
+      filename
     end
 
 end
