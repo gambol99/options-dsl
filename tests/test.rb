@@ -22,8 +22,8 @@ begin
     cli        = OptionsDSL.load config, options 
     options    = cli.parse!
     time_taken = ( Time.now - start_time ) * 1000
-    puts ""
-    puts "Options Generated: (processed time: %d ms)" % [ time_taken ]
+    puts ''
+    puts 'Options Generated: (processed time: %d ms)' % [ time_taken ]
     PP.pp options
 rescue ArgumentError => e 
 	puts e.message

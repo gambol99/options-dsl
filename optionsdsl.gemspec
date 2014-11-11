@@ -9,11 +9,11 @@ $:.unshift File.join(File.dirname(__FILE__),'.','lib/optionsdsl' )
 require 'version'
 
 Gem::Specification.new do |s|
-    s.name        = "optionsdsl"
+    s.name        = 'optionsdsl'
     s.version     = OptionsDSL::VERSION
     s.platform    = Gem::Platform::RUBY
     s.date        = '2014-03-04'
-    s.authors     = ["Rohith Jayawardene"]
+    s.authors     = ['Rohith Jayawardene']
     s.email       = 'gambol99@gmail.com'
     s.homepage    = 'http://rubygems.org/gems/optionsdsl'
     s.summary     = %q{Command line options dsl}
@@ -25,5 +25,5 @@ Gem::Specification.new do |s|
     s.files         = `git ls-files`.split("\n")
     s.test_files    = `git ls-files -- {test,spec,features}/*`.split("\n")
     s.executables   = `git ls-files -- bin/*`.split("\n").map{ |f| File.basename(f) }
-    s.require_paths = ["lib"]
+    s.require_paths = ['lib']
 end

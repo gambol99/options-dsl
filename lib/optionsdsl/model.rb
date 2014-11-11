@@ -14,36 +14,36 @@ class Rules
         @options     = {}
         @parser      = {}
     end
-    def validation? name
-        @validations.has_key? name
+    def validation?(name)
+      @validations.has_key? name
     end
-    def command? name
-        @commands.has_key name
+    def command?(name)
+      @commands.has_key name
     end
-    def option? name
-        @options.has_key? name
+    def option?(name)
+      @options.has_key? name
     end
 end
 class Command
     attr_reader :name, :description, :usage
     attr_accessor :inputs, :examples
-    def initialize name, description
-        @name        = name
-        @description = description
-        @inputs      = {}
-        @examples    = nil
-        @usage       = nil
+    def initialize(name, description)
+      @name = name
+      @description = description
+      @inputs = {}
+      @examples = nil
+      @usage = nil
     end
 end
 class Validation
     attr_reader :name, :attributes
-    def initialize name, attributes
-        @name       = name
-        @attributes = {}
-        @attributes.merge! attributes 
+    def initialize(name, attributes)
+      @name = name
+      @attributes = {}
+      @attributes.merge! attributes
     end
-    def has? attribute
-        @attributes.has_key? attribute
+    def has?(attribute)
+      @attributes.has_key? attribute
     end
     def method_missing(m, *args, &block) 
         @attributes[m]
@@ -51,21 +51,21 @@ class Validation
 end
 class Options
     attr_accessor :name, :short, :long
-    def initialize name
-        @name  = name
-        @short = nil
-        @long  = nil
+    def initialize(name)
+      @name = name
+      @short = nil
+      @long = nil
     end
 end
 class Input
     attr_accessor :name, :attributes
-    def initialize name, attributes
-        @name       = name
-        @attributes = {}
-        @attributes.merge! attributes
+    def initialize(name, attributes)
+      @name = name
+      @attributes = {}
+      @attributes.merge! attributes
     end
-    def has? attribute
-        @attributes.has_key? attribute
+    def has?(attribute)
+      @attributes.has_key? attribute
     end
     def method_missing(m, *args, &block) 
         @attributes[m] = args.first unless args.empty?
@@ -75,9 +75,9 @@ class Input
 end
 class Example
     attr_reader :name, :example
-    def initialize name, example
-        @name       = name
-        @example    = example
+    def initialize(name, example)
+      @name = name
+      @example = example
     end
 end
 end

@@ -16,7 +16,7 @@ module OptionsDSL
         OptionsDSL::VERSION
     end 
 
-    def self.load config, options = {}
-        OptionsDSL::Loader::new config, options
+    def self.load(config, options = {})
+      OptionsDSL::Loader::new config, options
     end
 end
